@@ -1,13 +1,32 @@
 const string PluginName = Meta::ExecutingPlugin().Name;
-const string MenuIconColor = "\\$f5d";
-const string PluginIcon = Icons::Cogs;
+const string MenuIconColor = "\\$fd2";
+const string PluginIcon = Icons::Ban + Icons::CameraRetro;
 const string MenuTitle = MenuIconColor + PluginIcon + "\\$z " + PluginName;
 
 void Main() {
     yield(17);
+    if (!S_Enabled) return;
     // This can be run in a coro with GameLoop or MainLoop contextes with okay results, but camera movement is not sooth for a frame or two when switching (sometimes).
     // Using a hook solves this so it's seamless.
     HookAfterSetAlt.Apply();
+}
+
+void OnEnabled() {
+    if (S_Enabled) HookAfterSetAlt.Apply();
+}
+
+void OnDisabled() {
+    CheckUnhookAllRegisteredHooks();
+}
+void OnDestroyed() {
+    CheckUnhookAllRegisteredHooks();
+}
+
+void RenderMenu() {
+    if (UI::BeginMenu(MenuTitle)) {
+        R_S_AutoToggles();
+        UI::EndMenu();
+    }
 }
 
 void CheckCameras(CGameCtnApp@ app) {
@@ -63,7 +82,6 @@ void OnSetAltCamFlag(CGameTerminal@ rbx) {
         CheckSetAlt(rbx, S_Cam3Auto, camStatus);
     }
 }
-
 
 
 void dev_trace(const string &in msg) {

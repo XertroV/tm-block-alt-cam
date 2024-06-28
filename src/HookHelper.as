@@ -72,6 +72,7 @@ class HookHelper {
         if (hookInfo is null) return false;
         Dev::Unhook(hookInfo);
         @hookInfo = null;
+        trace("Hook unapplied for " + functionName);
         return true;
     }
 

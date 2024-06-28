@@ -5,6 +5,9 @@ enum CameraAutoToggleChoice {
 }
 
 [Setting hidden]
+bool S_Enabled = true;
+
+[Setting hidden]
 CameraAutoToggleChoice S_Cam1Auto = CameraAutoToggleChoice::Do_Nothing;
 
 [Setting hidden]
@@ -15,6 +18,9 @@ CameraAutoToggleChoice S_Cam3Auto = CameraAutoToggleChoice::Do_Nothing;
 
 [SettingsTab name="Block Alt Cams"]
 void R_S_AutoToggles() {
+    bool wasEnabled = S_Enabled;
+    S_Enabled = UI::Checkbox("Enabled", S_Enabled);
+    if (wasEnabled != S_Enabled) HookAfterSetAlt.SetApplied(S_Enabled);
     UI::SeparatorText("Cam 1");
     UI::TextWrapped("When changing to Cam 1, set the alt cam?");
     S_Cam1Auto = Combo_CamChoice("Cam 1", S_Cam1Auto);
