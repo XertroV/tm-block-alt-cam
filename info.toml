@@ -1,0 +1,9 @@
+[meta]
+name     = "Block Alt Cam"
+author   = "XertroV"
+category = "Race"
+version  = "0.1.5"
+
+[script]
+#__DEFINES__
+# dependencies = ["MLHook", "MLFeedRaceData"]

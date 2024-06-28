@@ -1,0 +1,23 @@
+E8 74 00 00 00 8B D6 48 8B CB E8 AA FF FF FF 48 8B 4B 28 8B D0 E8 5F 86 FB FF 45 33 C0 44 8B C8
+
+E8 ?? 00 00 00 8B D6 48 8B CB E8 ?? FF FF FF 48 8B 4B 28 8B D0 E8 ?? ?? ?? ?? 45 33 C0 44 8B C8
+// unique in tm.exe, with matches in other modules:
+E8 ?? 00 00 00 8B D6 48 8B CB
+E8 ?? 00 00 00 8B D6 48 8B CB E8
+// unique in tm.exe and all other modules
+E8 ?? 00 00 00 8B D6 48 8B CB E8 ?? FF FF FF
+
+
+
+
+
+Trackmania.exe.text+E03217 - E8 74000000           - call Trackmania.exe.text+E03290 { sets alt cam
+ }
+Trackmania.exe.text+E0321C - 8B D6                 - mov edx,esi
+Trackmania.exe.text+E0321E - 48 8B CB              - mov rcx,rbx
+Trackmania.exe.text+E03221 - E8 AAFFFFFF           - call Trackmania.exe.text+E031D0
+Trackmania.exe.text+E03226 - 48 8B 4B 28           - mov rcx,[rbx+28]
+Trackmania.exe.text+E0322A - 8B D0                 - mov edx,eax
+Trackmania.exe.text+E0322C - E8 5F86FBFF           - call Trackmania.exe.text+DBB890
+Trackmania.exe.text+E03231 - 45 33 C0              - xor r8d,r8d
+Trackmania.exe.text+E03234 - 44 8B C8              - mov r9d,eax
