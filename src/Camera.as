@@ -5,16 +5,22 @@ class CameraStatus {
     bool isAlt;
     bool canDrive;
     uint currCam;
-    CameraStatus(bool isAlt, bool canDrive, uint currCam) {
+    uint priorCam;
+    CameraStatus(bool isAlt, bool canDrive, uint currCam, uint priorCam) {
         this.isAlt = isAlt;
         this.canDrive = canDrive;
-        this.currCam = currCam;
+        this.currCam = currCam > 0 ? currCam : priorCam;
+        this.priorCam = priorCam;
     }
     CameraStatus() {}
 
     string ToString() const {
         if (currCam == 0) return "None";
         return tostring(CameraType(currCam)) + " [" + tostring(CGameItemModel::EnumDefaultCam(currCam)) + "]" + (isAlt ? " (alt)" : "") + (canDrive ? " (drivable)" : "");
+    }
+
+    bool ShouldWaitAFrame() {
+        return priorCam == currCam && currCam != CameraType::Cam3 && S_EnableRecenterViaToggleCurrent;
     }
 }
 
@@ -25,10 +31,11 @@ CameraStatus@ GetCameraStatus(CGameTerminal@ gt = null) {
     if (gt is null) return CameraStatus();
 	bool alt = Dev::GetOffsetUint16(gt, 0x30) == 0x0;
 	auto canDrive = Dev::GetOffsetUint32(gt, 0x60) == 0x0;
-	// auto currCam = Dev::GetOffsetUint32(gt, 0x34);
+    // usually this should be current cam
+	auto previousCam = Dev::GetOffsetUint32(gt, 0x34);
     // this is the camera that is going to be set when a user toggles cameras. it is more suitable for our use case in this plugin than 0x34
 	auto currCam = Dev::GetOffsetUint32(gt, 0x40);
-    return CameraStatus(alt, canDrive, currCam);
+    return CameraStatus(alt, canDrive, currCam, previousCam);
 }
 
 CGameTerminal@ GetGameTerminal(CGameCtnApp@ app) {

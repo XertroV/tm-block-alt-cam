@@ -6,6 +6,8 @@ E8 ?? 00 00 00 8B D6 48 8B CB
 E8 ?? 00 00 00 8B D6 48 8B CB E8
 // unique in tm.exe and all other modules
 E8 ?? 00 00 00 8B D6 48 8B CB E8 ?? FF FF FF
+// includes +28 to check offsets haven't changed
+E8 ?? 00 00 00 8B D6 48 8B CB E8 ?? FF FF FF 48 8B 4B 28
 
 
 
