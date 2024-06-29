@@ -6,10 +6,11 @@ class CameraStatus {
     bool canDrive;
     uint currCam;
     uint priorCam;
+
     CameraStatus(bool isAlt, bool canDrive, uint currCam, uint priorCam) {
         this.isAlt = isAlt;
         this.canDrive = canDrive;
-        this.currCam = currCam > 0 ? currCam : priorCam;
+        this.currCam = currCam == 0 || g_AlwaysUsePriorCam ? priorCam : currCam;
         this.priorCam = priorCam;
     }
     CameraStatus() {}

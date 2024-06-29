@@ -14,14 +14,16 @@ void Main() {
     startnew(CheckCamerasLoop).WithRunContext(Meta::RunContext::GameLoop);
 }
 
-bool g_CamCheckShouldWaitIfSameCam = false;
+bool g_AlwaysUsePriorCam = false;
 
 void CheckCamerasLoop() {
     while (true) {
         yield(3);
         auto app = GetApp();
         if (app is null) continue;
+        g_AlwaysUsePriorCam = true;
         CheckCameras(app);
+        g_AlwaysUsePriorCam = false;
     }
 }
 
@@ -55,19 +57,19 @@ void CheckSetAlt(CGameTerminal@ gt, CameraAutoToggleChoice choice, CameraStatus@
         case CameraAutoToggleChoice::Do_Nothing:
             break;
         case CameraAutoToggleChoice::Always_Alt:
-            if (cs.isAlt) break;
-            dev_trace("set alt cam flag");
+            // if (cs.isAlt) break;
+            // dev_trace("set alt cam flag");
             if (cs.ShouldWaitAFrame()) {
-                startnew(CoroutineFuncUserdataUint64(SetAltCamNextFrame), uint64(1));
+                startnew(CoroutineFuncUserdataUint64(SetAltCamNextFrame), uint64(1 + (g_AlwaysUsePriorCam ? 2 : 0)));
             } else {
                 SetAltCamFlag(gt, true);
             }
             break;
         case CameraAutoToggleChoice::Never_Alt:
-            if (!cs.isAlt) break;
-            dev_trace("unset alt cam flag");
+            // if (!cs.isAlt) break;
+            // dev_trace("unset alt cam flag");
             if (cs.ShouldWaitAFrame()) {
-                startnew(CoroutineFuncUserdataUint64(SetAltCamNextFrame), uint64(0));
+                startnew(CoroutineFuncUserdataUint64(SetAltCamNextFrame), uint64(0 + (g_AlwaysUsePriorCam ? 2 : 0)));
             } else {
                 SetAltCamFlag(gt, false);
             }
@@ -75,12 +77,15 @@ void CheckSetAlt(CGameTerminal@ gt, CameraAutoToggleChoice choice, CameraStatus@
     }
 }
 
-// isAlt: 0 for false, 1 for true
+// isAlt LSB: 0 for false, 1 for true
+// alwaysUsePriorCam 2nd bit: 0 for false, 2 for true
 void SetAltCamNextFrame(uint64 isAlt) {
-    yield();
+    yield(2);
     auto gt = GetGameTerminal(GetApp());
     if (gt is null) return;
-    SetAltCamFlag(gt, isAlt > 0);
+    if (isAlt & 2 > 0) g_AlwaysUsePriorCam = true;
+    SetAltCamFlag(gt, isAlt & 1 == 1);
+    if (isAlt & 2 > 0) g_AlwaysUsePriorCam = false;
 }
 
 FunctionHookHelper@ HookAfterSetAlt = FunctionHookHelper(
